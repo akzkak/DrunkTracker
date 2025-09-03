@@ -106,9 +106,15 @@ end
 local function OnChatMessage(msg)
     for pattern, state in pairs(CHAT_PATTERNS) do
         if string.find(msg, pattern) then
+            local previousState = currentState
             currentState = state
             UpdateGUI()
-            DEFAULT_CHAT_FRAME:AddMessage("DrunkTracker: State changed to " .. STATE_NAMES[state], 0, 1, 1)
+            
+            -- Raid warning when losing smashed state
+            if previousState == DRUNK_STATES.SMASHED and state ~= DRUNK_STATES.SMASHED then
+                UIErrorsFrame:AddMessage("LOST SMASHED STATE!", 1.0, 0.1, 0.1, 1.0, UIERRORS_HOLD_TIME)
+            end
+            
             return
         end
     end
